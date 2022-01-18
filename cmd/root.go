@@ -1,15 +1,16 @@
 package cmd
 
 import (
-	"fmt"
-	"io/ioutil"
+	"io/fs"
 	"log"
+	"os"
 
 	"github.com/hxhieu/json-to-env/cmd/utils"
 	"github.com/spf13/cobra"
 )
 
-var OutputFile string
+var outputFile string
+var fieldSeparator string
 
 var rootCmd = &cobra.Command{
 	Use:   "json-to-env",
@@ -19,24 +20,35 @@ var rootCmd = &cobra.Command{
 		if len(args) == 0 {
 			log.Fatal("Please provide a JSON file as the first argument")
 		}
-		content, err := ioutil.ReadFile(args[0])
+		content, err := os.ReadFile(args[0])
 		if err == nil {
-			str, err := utils.JsonToEnv(&content)
+			options := utils.JsonToEnvOption{
+				FieldSeparator: fieldSeparator,
+			}
+			str, err := utils.JsonToEnv(&content, &options)
 			if err != nil {
 				log.Fatal(err)
 			}
-			fmt.Print(*str)
+			os.WriteFile(outputFile, []byte(*str), fs.ModePerm)
 		}
 	},
 }
 
 func init() {
 	rootCmd.PersistentFlags().StringVarP(
-		&OutputFile,
+		&outputFile,
 		"output",
 		"o",
 		".env",
 		"The output file",
+	)
+
+	rootCmd.PersistentFlags().StringVarP(
+		&fieldSeparator,
+		"separator",
+		"s",
+		"__",
+		"The nested fields separator",
 	)
 }
 

@@ -7,24 +7,33 @@ import (
 	"strings"
 )
 
-func mapToEnv(prefix *string, data *map[string]interface{}) (*string, error) {
+type JsonToEnvOption struct {
+	FieldSeparator string
+}
+
+func mapToEnv(prefix *string, data *map[string]interface{}, options *JsonToEnvOption) (*string, error) {
 	var b strings.Builder
 	for key, element := range *data {
 		child_prefix := key
 		if prefix != nil {
-			child_prefix = fmt.Sprintf("%s__%s", *prefix, key)
+			child_prefix = fmt.Sprintf("%s%s%s", *prefix, options.FieldSeparator, key)
 		}
 		switch v := (element).(type) {
 		case string:
 			b.WriteString(fmt.Sprintf("%s: \"%s\"", child_prefix, v))
-		case int:
-			b.WriteString(fmt.Sprintf("%s: %d", child_prefix, v))
 		case bool:
 			b.WriteString(fmt.Sprintf("%s: %t", child_prefix, v))
 		case float64:
-			b.WriteString(fmt.Sprintf("%s: %f", child_prefix, v))
+			// JSON unmarshall all number to float
+			// so we need to check for integrals here
+			intVal := int(v)
+			if v == float64(intVal) {
+				b.WriteString(fmt.Sprintf("%s: %d", child_prefix, intVal))
+			} else {
+				b.WriteString(fmt.Sprintf("%s: %f", child_prefix, v))
+			}
 		case map[string]interface{}:
-			content, err := mapToEnv(&child_prefix, &v)
+			content, err := mapToEnv(&child_prefix, &v, options)
 			if err != nil {
 				return nil, err
 			}
@@ -37,11 +46,11 @@ func mapToEnv(prefix *string, data *map[string]interface{}) (*string, error) {
 	return &out, nil
 }
 
-func JsonToEnv(buffer *[]byte) (*string, error) {
+func JsonToEnv(buffer *[]byte, options *JsonToEnvOption) (*string, error) {
 	var jsonObj map[string]interface{}
 	err := json.Unmarshal(*buffer, &jsonObj)
 	if err != nil {
 		return nil, err
 	}
-	return mapToEnv(nil, &jsonObj)
+	return mapToEnv(nil, &jsonObj, options)
 }
