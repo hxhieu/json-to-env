@@ -11,6 +11,7 @@ import (
 
 var outputFile string
 var fieldSeparator string
+var keyOnly bool
 
 var rootCmd = &cobra.Command{
 	Use:   "json-to-env",
@@ -24,6 +25,7 @@ var rootCmd = &cobra.Command{
 		if err == nil {
 			options := utils.JsonToEnvOption{
 				FieldSeparator: fieldSeparator,
+				KeyOnly:        keyOnly,
 			}
 			str, err := utils.JsonToEnv(&content, &options)
 			if err != nil {
@@ -49,6 +51,13 @@ func init() {
 		"s",
 		"__",
 		"The nested fields separator",
+	)
+
+	rootCmd.PersistentFlags().BoolVar(
+		&keyOnly,
+		"keys-only",
+		false,
+		"Only parse the JSON keys, handy for docker-compose passthrough",
 	)
 }
 
