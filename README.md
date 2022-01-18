@@ -1,3 +1,10 @@
+Download from the (Releases)[https://github.com/hxhieu/json-to-env/releases/latest]
+
+OR
+
+`go install github.com/hxhieu/json-to-env@latest`
+
+
 ```
 Convert the JSON format to .env format
 
