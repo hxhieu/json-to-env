@@ -2,7 +2,9 @@ Download from the (Releases)[https://github.com/hxhieu/json-to-env/releases/late
 
 OR
 
-`go install github.com/hxhieu/json-to-env@latest`
+```
+go install github.com/hxhieu/json-to-env@latest
+```
 
 
 ```
