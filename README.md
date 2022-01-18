@@ -47,14 +47,14 @@ Output as
 ```
 # .env
 
-Logging__LogLevel__Default: "Debug"
-Logging__LogLevel__Microsoft: "Information"
-Logging__LogLevel__System: "Information"
-Logging__LogLevel__Microsoft.EntityFrameworkCore.Database.Command: "Warning"
-Logging__UseDeveloperExceptionPage: "true"
+Logging__UseDeveloperExceptionPage="true"
+Logging__LogLevel__Default="Debug"
+Logging__LogLevel__Microsoft="Information"
+Logging__LogLevel__System="Information"
+Logging__LogLevel__Microsoft_EntityFrameworkCore_Database_Command="Warning"
 ```
 
 # Known issues
-- JSON fields ordering are not preserved
+- JSON unmarshall fields ordering are not preserved
 - JSON comments `//` and `/* */` are not supported so remove them in prior
 - `:` as separator will cause weird output
